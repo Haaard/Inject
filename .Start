@@ -1,0 +1,45 @@
+01100111 01100101 01110100 00100000 01101111 01110101 01110100 00100000 01101111 01100110 00100000 01101001 01100111 01101110 01101111 01110010 01100001 01101110 01100011 01100101 00100000 01101110 01101111 01110111 00100000 01101111 01110010
+function autocomplet() {
+
+    var min_length = 1; // min caracters to display the autocomplete
+    var keyword = $('#cfuncionario').val();
+    if (keyword.length >= min_length) {
+        $.ajax({
+            url: "php/cfuncionario.php",
+            type: 'POST',
+            data: {keyword:keyword},
+            success:function(data){
+                var availableTags = [data];
+            alert(availableTags);
+            $("#cfuncionario").autocomplete({
+                 source: availableTags
+
+             });
+
+            }
+        });
+    }
+
+}
+.space
+<?php
+require 'connect.php';
+
+$keyword = $_POST['keyword'].'%';
+$query = "SELECT nome_funcionario FROM funcionarios WHERE nome_funcionario LIKE '$keyword' LIMIT 10";
+
+$result = mysqli_query($connect, $query);
+
+if($result)
+{
+  $output = array();
+
+  while($row = mysqli_fetch_array($result))
+  {
+    $output[] = $row['nome_funcionario'];
+  }
+
+  header('Content-Type: application/json');
+  echo json_encode($output);
+}
+?>
